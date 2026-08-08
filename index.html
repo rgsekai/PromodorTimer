@@ -1,9 +1,10 @@
 <!DOCTYPE html>
+<!-- UPDATE: Fixed UI freezing issue -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Glass M3 Pomodoro & Clock</title>
+  <title>Glass Pomodoro & Clock v2</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
   <style>
@@ -601,5 +602,4 @@
           osc.frequency.setValueAtTime(880, ctx.currentTime); 
           gainNode.gain.setValueAtTime(1, ctx.currentTime);
           gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-          osc.connect(gainNode);
-          gainNode.connect(
+          osc.conne
