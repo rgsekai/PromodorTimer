@@ -454,6 +454,35 @@
   </div>
 
   <script>
+    // ===== Persistence helpers =====
+    // Wrapped in try/catch: some embedded contexts (e.g. certain browsers'
+    // handling of third-party iframes, like a Notion embed) block storage
+    // entirely. If that happens here, the app just falls back to defaults
+    // instead of throwing an error.
+    const STORAGE_KEY = 'glassPomodoroSettings';
+
+    function loadSettings() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : {};
+      } catch (e) {
+        console.warn('Storage unavailable, settings will not persist:', e);
+        return {};
+      }
+    }
+
+    function saveSettings(partial) {
+      try {
+        const current = loadSettings();
+        const merged = Object.assign({}, current, partial);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+      } catch (e) {
+        console.warn('Storage unavailable, settings will not persist:', e);
+      }
+    }
+
+    const savedSettings = loadSettings();
+
     // CORE VARIABLES
     let timer;
     let clockInterval;
@@ -461,13 +490,16 @@
     let currentMode = 'work'; 
     let timeRemaining = 25 * 60; 
     let savedTimes = { work: null, shortBreak: null, longBreak: null };
-    const durations = { work: 25, shortBreak: 5, longBreak: 15 };
+    const durations = {
+      work: savedSettings.durations?.work ?? 25,
+      shortBreak: savedSettings.durations?.shortBreak ?? 5,
+      longBreak: savedSettings.durations?.longBreak ?? 15
+    };
     let customAudioUrl = null;
 
     const localTz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
-    // Empty string means "nothing explicitly chosen" -> pill shows "Choose",
-    // clock still runs on local time under the hood.
-    let selectedTimezone = '';
+    // Restore previously chosen timezone (empty string = "Choose" / local time)
+    let selectedTimezone = savedSettings.timezone ?? '';
 
     // Curated list of world timezones, grouped by region, single-word
     // city/country labels only (per user request for the pill display).
@@ -547,6 +579,7 @@
     window.onTimezoneChange = function() {
       const select = document.getElementById('tz-select');
       selectedTimezone = select.value;
+      saveSettings({ timezone: selectedTimezone });
       window.updateClock();
     };
 
@@ -602,6 +635,7 @@
       durations.longBreak = parseInt(document.getElementById('long-break-time').value) || 15;
       
       savedTimes = { work: null, shortBreak: null, longBreak: null };
+      saveSettings({ durations: { ...durations } });
       if (!isRunning) window.resetTimer();
     };
 
@@ -673,6 +707,7 @@
       } else {
         document.documentElement.removeAttribute('data-theme');
       }
+      saveSettings({ darkTheme: isDark });
     };
 
     window.handleAudioUpload = function(event) {
@@ -688,6 +723,11 @@
         let fileName = file.name;
         if (fileName.length > 20) fileName = fileName.substring(0, 17) + '...';
         soundStatus.textContent = 'Custom: ' + fileName;
+        // Note: the audio file itself can't be persisted across reloads
+        // (object URLs and File objects don't survive a page refresh),
+        // only the fact that a custom sound was chosen isn't remembered either.
+        // If this matters to you, let me know and a "re-upload on load" prompt
+        // can be added instead.
       }
     };
 
@@ -739,6 +779,18 @@
     };
 
     // INIT
+    // Restore work/break minute fields from saved settings
+    document.getElementById('work-time').value = durations.work;
+    document.getElementById('short-break-time').value = durations.shortBreak;
+    document.getElementById('long-break-time').value = durations.longBreak;
+    timeRemaining = durations.work * 60;
+
+    // Restore dark theme
+    if (savedSettings.darkTheme) {
+      document.getElementById('theme-toggle').checked = true;
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+
     populateTimezoneSelect();
     window.updateClock();
     clockInterval = setInterval(window.updateClock, 1000);
@@ -746,5 +798,3 @@
   </script>
 </body>
 </html>
-      
- 
