@@ -8,7 +8,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
   <style>
     :root {
-      /* Material 3 Light Theme Tokens */
       --md-sys-color-background-grad: linear-gradient(135deg, #eaddff 0%, #ffdbec 100%);
       --md-sys-color-on-background: #1C1B1F;
       --md-sys-color-surface: rgba(255, 255, 255, 0.4); 
@@ -22,7 +21,6 @@
     }
 
     [data-theme="dark"] {
-      /* Material 3 Dark Theme Tokens */
       --md-sys-color-background-grad: linear-gradient(135deg, #141218 0%, #381e72 100%);
       --md-sys-color-on-background: #E6E0E9;
       --md-sys-color-surface: rgba(43, 41, 48, 0.4); 
@@ -40,7 +38,6 @@
       margin: 0;
       padding: 0;
       font-family: 'Roboto', sans-serif;
-      /* Removes the blue highlight box on mobile when tapping */
       -webkit-tap-highlight-color: transparent; 
     }
 
@@ -72,7 +69,6 @@
       transition: background-color 0.3s ease, border-color 0.3s ease;
     }
 
-    /* Views & Smooth Tab Switching */
     .view-section {
       display: none;
       flex-direction: column;
@@ -92,7 +88,6 @@
       100% { opacity: 1; transform: translateY(0); }
     }
 
-    /* Flip Clock Style */
     .flip-clock {
       display: flex;
       align-items: center;
@@ -118,7 +113,6 @@
       min-width: 100px;
     }
 
-    /* The middle line for the flip clock effect */
     .flip-card::after {
       content: "";
       position: absolute;
@@ -138,7 +132,6 @@
       padding-bottom: 8px;
     }
 
-    /* Choose Pill Label */
     .pill-label {
       background-color: var(--md-sys-color-surface-container);
       color: var(--md-sys-color-primary);
@@ -154,7 +147,6 @@
       cursor: default;
     }
 
-    /* Pomodoro Settings */
     .mode-selector {
       display: flex;
       background: var(--md-sys-color-surface-container);
@@ -191,7 +183,6 @@
       text-shadow: 0 2px 10px rgba(0,0,0,0.05);
     }
 
-    /* Button Overflow Fix */
     .controls {
       display: flex;
       gap: 12px;
@@ -210,7 +201,7 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      transition: opacity 0.2s, transform 0.1s, background-color 0.3s ease, color 0.3s ease;
+      transition: opacity 0.2s, transform 0.1s, background-color 0.3s ease;
       border: 1px solid transparent;
       outline: none;
     }
@@ -225,7 +216,6 @@
       padding: 16px 20px;
       flex: 1; 
       min-width: 0;
-      max-width: 160px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
 
@@ -243,13 +233,12 @@
       flex-shrink: 0; 
     }
 
-    /* Smooth Settings Panel Transition */
     .settings-section {
       width: 100%;
       max-height: 0;
       opacity: 0;
       overflow: hidden;
-      transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, padding 0.4s ease;
+      transition: max-height 0.4s ease, opacity 0.3s ease, padding 0.4s ease;
     }
 
     .settings-section.show {
@@ -310,7 +299,6 @@
     input:checked + .slider { background-color: var(--md-sys-color-primary); border-color: var(--md-sys-color-primary); }
     input:checked + .slider:before { transform: translateX(20px); background-color: var(--md-sys-color-on-primary); }
 
-    /* Bottom Navigation */
     .bottom-nav {
       display: flex;
       width: 100%;
@@ -367,22 +355,22 @@
     <!-- POMODORO VIEW -->
     <div id="pomodoro-view" class="view-section active-view">
       <div class="mode-selector">
-        <button class="mode-btn active" id="btn-work">Work</button>
-        <button class="mode-btn" id="btn-short">Short Break</button>
-        <button class="mode-btn" id="btn-long">Long Break</button>
+        <button class="mode-btn active" id="btn-work" onclick="setMode('work')">Work</button>
+        <button class="mode-btn" id="btn-short" onclick="setMode('shortBreak')">Short Break</button>
+        <button class="mode-btn" id="btn-long" onclick="setMode('longBreak')">Long Break</button>
       </div>
 
       <div class="timer-display" id="time-display">25:00</div>
 
       <div class="controls">
-        <button class="btn btn-primary" id="start-btn">
+        <button class="btn btn-primary" id="start-btn" onclick="toggleTimer()">
           <span class="material-symbols-outlined" id="play-icon">play_arrow</span>
           <span id="start-text">Start</span>
         </button>
-        <button class="btn btn-secondary icon-btn" id="reset-btn" title="Reset Timer">
+        <button class="btn btn-secondary icon-btn" onclick="resetTimer()" title="Reset Timer">
           <span class="material-symbols-outlined">refresh</span>
         </button>
-        <button class="btn btn-secondary icon-btn" id="settings-btn" title="Settings">
+        <button class="btn btn-secondary icon-btn" onclick="toggleSettings()" title="Settings">
           <span class="material-symbols-outlined">settings</span>
         </button>
       </div>
@@ -396,7 +384,7 @@
         <div class="input-group">
           <label for="theme-toggle">Dark Theme</label>
           <label class="switch">
-            <input type="checkbox" id="theme-toggle">
+            <input type="checkbox" id="theme-toggle" onchange="toggleTheme()">
             <span class="slider"></span>
           </label>
         </div>
@@ -404,49 +392,46 @@
         <div class="input-group">
           <label>Alarm Sound</label>
           <div class="sound-btn-group">
-            <button class="btn btn-secondary sound-btn" id="btn-choose-file">Choose File</button>
-            <button class="btn btn-secondary sound-btn" id="btn-default-sound">Default</button>
+            <button class="btn btn-secondary sound-btn" onclick="document.getElementById('audio-upload').click()">Choose File</button>
+            <button class="btn btn-secondary sound-btn" onclick="useDefaultSound()">Default</button>
           </div>
-          <input type="file" id="audio-upload" accept="audio/*" style="display: none;">
+          <input type="file" id="audio-upload" accept="audio/*" style="display: none;" onchange="handleAudioUpload(event)">
         </div>
         <div class="sound-status" id="sound-status">Using Default Sound</div>
         <audio id="custom-audio-player"></audio>
 
         <div class="input-group">
           <label for="work-time">Work (Minutes)</label>
-          <input type="number" id="work-time" class="m3-input" value="25" min="1" max="90">
+          <input type="number" id="work-time" class="m3-input" value="25" min="1" max="90" onchange="updateDurations()">
         </div>
         <div class="input-group">
           <label for="short-break-time">Short Break (Minutes)</label>
-          <input type="number" id="short-break-time" class="m3-input" value="5" min="1" max="30">
+          <input type="number" id="short-break-time" class="m3-input" value="5" min="1" max="30" onchange="updateDurations()">
         </div>
         <div class="input-group">
           <label for="long-break-time">Long Break (Minutes)</label>
-          <input type="number" id="long-break-time" class="m3-input" value="15" min="1" max="60">
+          <input type="number" id="long-break-time" class="m3-input" value="15" min="1" max="60" onchange="updateDurations()">
         </div>
       </div>
     </div>
 
     <!-- BOTTOM NAVIGATION -->
     <div class="bottom-nav">
-      <button class="nav-tab" id="nav-btn-home">
+      <button class="nav-tab" id="nav-btn-home" onclick="switchView('home')">
         <span class="material-symbols-outlined">home</span>
         Home
       </button>
-      <button class="nav-tab active" id="nav-btn-pomodoro">
+      <button class="nav-tab active" id="nav-btn-pomodoro" onclick="switchView('pomodoro')">
         <span class="material-symbols-outlined">timer</span>
         Timer
       </button>
     </div>
-
   </div>
 
   <script>
-    // Console log to confirm script runs successfully!
-    console.log("✅ App loaded successfully! Buttons are linked.");
-
-    // --- Core Variables ---
+    // CORE VARIABLES
     let timer;
+    let clockInterval;
     let isRunning = false;
     let currentMode = 'work'; 
     let timeRemaining = 25 * 60; 
@@ -454,18 +439,8 @@
     const durations = { work: 25, shortBreak: 5, longBreak: 15 };
     let customAudioUrl = null;
 
-    // --- DOM Elements ---
-    const display = document.getElementById('time-display');
-    const startBtnText = document.getElementById('start-text');
-    const playIcon = document.getElementById('play-icon');
-    const settingsPanel = document.getElementById('settings-panel');
-    const audioPlayer = document.getElementById('custom-audio-player');
-    const soundStatus = document.getElementById('sound-status');
-    const clockH = document.getElementById('clock-h');
-    const clockM = document.getElementById('clock-m');
-
-    // --- Logic Functions ---
-    function switchView(view) {
+    // FORCING GLOBAL SCOPE FOR INLINE HTML ONCLICK
+    window.switchView = function(view) {
       document.getElementById('home-view').classList.remove('active-view');
       document.getElementById('pomodoro-view').classList.remove('active-view');
       document.getElementById('nav-btn-home').classList.remove('active');
@@ -475,14 +450,15 @@
         document.getElementById('home-view').classList.add('active-view');
         document.getElementById('nav-btn-home').classList.add('active');
         document.title = "Clock & Pomodoro";
+        window.updateClock();
       } else {
         document.getElementById('pomodoro-view').classList.add('active-view');
         document.getElementById('nav-btn-pomodoro').classList.add('active');
-        updateDisplay();
+        window.updateDisplay();
       }
-    }
+    };
 
-    function updateClock() {
+    window.updateClock = function() {
       const now = new Date();
       let hours = now.getHours();
       let minutes = now.getMinutes();
@@ -493,29 +469,31 @@
       hours = hours < 10 ? '0' + hours : hours;
       minutes = minutes < 10 ? '0' + minutes : minutes;
       
-      clockH.textContent = hours;
-      clockM.textContent = minutes;
-    }
+      document.getElementById('clock-h').textContent = hours;
+      document.getElementById('clock-m').textContent = minutes;
+    };
 
-    function updateDisplay() {
+    window.updateDisplay = function() {
+      const display = document.getElementById('time-display');
       const minutes = Math.floor(timeRemaining / 60);
       const seconds = timeRemaining % 60;
       display.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
       if (document.getElementById('pomodoro-view').classList.contains('active-view')) {
         document.title = `${display.textContent} - Pomodoro`;
       }
-    }
+    };
 
-    function updateDurations() {
+    window.updateDurations = function() {
       durations.work = parseInt(document.getElementById('work-time').value) || 25;
       durations.shortBreak = parseInt(document.getElementById('short-break-time').value) || 5;
       durations.longBreak = parseInt(document.getElementById('long-break-time').value) || 15;
+      
       savedTimes = { work: null, shortBreak: null, longBreak: null };
-      if (!isRunning) resetTimer();
-    }
+      if (!isRunning) window.resetTimer();
+    };
 
-    function setMode(mode) {
-      if (isRunning) toggleTimer(); 
+    window.setMode = function(mode) {
+      if (isRunning) window.toggleTimer(); 
       savedTimes[currentMode] = timeRemaining;
       currentMode = mode;
       
@@ -529,10 +507,13 @@
       } else {
         timeRemaining = durations[mode] * 60;
       }
-      updateDisplay();
-    }
+      window.updateDisplay();
+    };
 
-    function toggleTimer() {
+    window.toggleTimer = function() {
+      const startBtnText = document.getElementById('start-text');
+      const playIcon = document.getElementById('play-icon');
+
       if (isRunning) {
         clearInterval(timer);
         isRunning = false;
@@ -545,79 +526,80 @@
         
         timer = setInterval(() => {
           timeRemaining--;
-          updateDisplay();
+          window.updateDisplay();
           
           if (timeRemaining <= 0) {
             clearInterval(timer);
             isRunning = false;
             startBtnText.textContent = 'Start';
             playIcon.textContent = 'play_arrow';
+            
             savedTimes[currentMode] = null; 
-            playAlarm(); 
-            resetTimer();
+            window.playAlarm(); 
+            window.resetTimer();
           }
         }, 1000);
       }
-    }
+    };
 
-    function resetTimer() {
-      if (isRunning) toggleTimer();
+    window.resetTimer = function() {
+      if (isRunning) window.toggleTimer();
       savedTimes[currentMode] = null;
       timeRemaining = durations[currentMode] * 60;
-      updateDisplay();
-    }
+      window.updateDisplay();
+    };
 
-    function toggleSettings() {
-      settingsPanel.classList.toggle('show');
-    }
+    window.toggleSettings = function() {
+      document.getElementById('settings-panel').classList.toggle('show');
+    };
 
-    function toggleTheme() {
+    window.toggleTheme = function() {
       const isDark = document.getElementById('theme-toggle').checked;
-      if (isDark) document.documentElement.setAttribute('data-theme', 'dark');
-      else document.documentElement.removeAttribute('data-theme');
-    }
+      if (isDark) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+      }
+    };
 
-    function handleAudioUpload(event) {
+    window.handleAudioUpload = function(event) {
       const file = event.target.files[0];
+      const audioPlayer = document.getElementById('custom-audio-player');
+      const soundStatus = document.getElementById('sound-status');
+      
       if (file) {
         if(customAudioUrl) URL.revokeObjectURL(customAudioUrl); 
         customAudioUrl = URL.createObjectURL(file);
         audioPlayer.src = customAudioUrl;
+        
         let fileName = file.name;
         if (fileName.length > 20) fileName = fileName.substring(0, 17) + '...';
         soundStatus.textContent = 'Custom: ' + fileName;
       }
-    }
+    };
 
-    function useDefaultSound() {
+    window.useDefaultSound = function() {
       customAudioUrl = null;
-      audioPlayer.removeAttribute('src');
-      soundStatus.textContent = 'Using Default Sound';
+      document.getElementById('custom-audio-player').removeAttribute('src');
+      document.getElementById('sound-status').textContent = 'Using Default Sound';
       document.getElementById('audio-upload').value = '';
-    }
+    };
 
-    function playAlarm() {
+    window.playAlarm = function() {
+      const audioPlayer = document.getElementById('custom-audio-player');
       if (customAudioUrl) {
         audioPlayer.play().catch(e => {
           console.error("Custom audio playback failed:", e);
-          playDefaultBeep(); 
+          window.playDefaultBeep(); 
         });
       } else {
-        playDefaultBeep();
+        window.playDefaultBeep();
       }
-    }
+    };
 
-    function playDefaultBeep() {
+    // FIX: this function was cut off in the original file (ended mid-word at
+    // "window.AudioContext || windo..."), which broke the entire <script> tag
+    // with a syntax error and silently disabled every button on the page.
+    window.playDefaultBeep = function() {
       const AudioContext = window.AudioContext || window.webkitAudioContext;
-      if (!AudioContext) {
-        alert('Time is up!');
-        return;
-      }
-      const ctx = new AudioContext();
-      for(let i = 0; i < 3; i++) {
-        setTimeout(() => {
-          const osc = ctx.createOscillator();
-          const gainNode = ctx.createGain();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(880, ctx.currentTime); 
-          g
+      if (!Au
