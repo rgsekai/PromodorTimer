@@ -40,6 +40,8 @@
       margin: 0;
       padding: 0;
       font-family: 'Roboto', sans-serif;
+      /* FIX: Removes the blue highlight box on mobile when tapping */
+      -webkit-tap-highlight-color: transparent; 
     }
 
     body {
@@ -70,53 +72,88 @@
       transition: background-color 0.3s ease, border-color 0.3s ease;
     }
 
-    /* Views */
+    /* Views & Smooth Tab Switching */
     .view-section {
-      display: flex;
+      display: none;
       flex-direction: column;
       align-items: center;
       width: 100%;
       gap: 24px;
-      animation: fadeIn 0.3s ease;
+      opacity: 0;
     }
 
-    .hidden {
-      display: none !important;
+    .view-section.active-view {
+      display: flex;
+      animation: smoothFade 0.4s ease forwards;
     }
 
-    /* Clock */
-    .clock-display {
-      font-size: 64px;
+    @keyframes smoothFade {
+      0% { opacity: 0; transform: translateY(5px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Flip Clock Style */
+    .flip-clock {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 40px 0 20px 0;
+    }
+
+    .flip-card {
+      background: var(--md-sys-color-secondary-container);
+      color: var(--md-sys-color-on-secondary-container);
+      border: 1px solid var(--glass-border);
+      padding: 20px 24px;
+      border-radius: 16px;
+      font-size: 72px;
+      font-weight: 700;
+      line-height: 1;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-width: 100px;
+    }
+
+    /* The middle line for the flip clock effect */
+    .flip-card::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background-color: rgba(0, 0, 0, 0.15);
+      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .colon {
+      font-size: 60px;
       font-weight: 700;
       color: var(--md-sys-color-primary);
-      letter-spacing: -2px;
-      line-height: 1.2;
-      margin: 40px 0;
-      text-shadow: 0 2px 10px rgba(0,0,0,0.05);
-      text-align: center;
-      display: flex;
-      align-items: baseline;
-      justify-content: center;
+      margin: 0 -4px;
+      padding-bottom: 8px;
     }
 
-    .ampm-text {
-      font-size: 24px;
+    /* Choose Pill Label */
+    .pill-label {
+      background-color: var(--md-sys-color-surface-container);
+      color: var(--md-sys-color-primary);
+      padding: 10px 28px;
+      border-radius: 100px;
+      font-size: 14px;
       font-weight: 500;
-      margin-left: 8px;
-      letter-spacing: 0;
-      opacity: 0.85;
-    }
-
-    .clock-label {
-      font-size: 16px;
-      font-weight: 500;
-      color: var(--md-sys-color-on-background);
-      opacity: 0.7;
-      margin-top: -24px;
+      border: 1px solid var(--glass-border);
+      text-transform: uppercase;
+      letter-spacing: 1px;
       margin-bottom: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
 
-    /* Pomodoro */
+    /* Pomodoro Settings */
     .mode-selector {
       display: flex;
       background: var(--md-sys-color-surface-container);
@@ -153,10 +190,13 @@
       text-shadow: 0 2px 10px rgba(0,0,0,0.05);
     }
 
+    /* FIX: Button Overflow & Sizing */
     .controls {
       display: flex;
-      gap: 16px;
+      gap: 12px;
       align-items: center;
+      width: 100%;
+      justify-content: center;
     }
 
     .btn {
@@ -171,6 +211,7 @@
       gap: 8px;
       transition: opacity 0.2s, transform 0.1s, background-color 0.3s ease, color 0.3s ease;
       border: 1px solid transparent;
+      outline: none;
     }
 
     .btn:active {
@@ -180,8 +221,10 @@
     .btn-primary {
       background-color: var(--md-sys-color-primary);
       color: var(--md-sys-color-on-primary);
-      padding: 16px 32px;
-      min-width: 140px;
+      padding: 16px 20px;
+      flex: 1; /* Allows button to dynamically shrink/grow */
+      min-width: 0;
+      max-width: 160px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
 
@@ -196,20 +239,24 @@
       width: 56px;
       height: 56px;
       border-radius: 50%;
+      flex-shrink: 0; /* Prevents icons from squishing */
     }
 
+    /* FIX: Smooth Settings Panel Transition */
     .settings-section {
       width: 100%;
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, padding 0.4s ease;
+    }
+
+    .settings-section.show {
+      max-height: 500px;
+      opacity: 1;
       margin-top: 8px;
       border-top: 1px solid var(--md-sys-color-outline);
       padding-top: 24px;
-      display: none;
-      animation: fadeIn 0.3s ease;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
     }
 
     .settings-title {
@@ -288,6 +335,7 @@
       border-radius: 16px;
       font-weight: 500;
       font-size: 14px;
+      outline: none;
     }
 
     .nav-tab:hover {
@@ -305,14 +353,20 @@
 
   <div class="app-container">
     
-    <!-- HOME VIEW (LOCAL CLOCK) -->
-    <div id="home-view" class="view-section hidden">
-      <div class="clock-display" id="real-time-clock"></div>
-      <div class="clock-label">Current Local Time</div>
+    <!-- HOME VIEW (FLIP CLOCK) -->
+    <div id="home-view" class="view-section">
+      
+      <div class="flip-clock">
+        <div class="flip-card"><span id="clock-h">12</span></div>
+        <span class="colon">:</span>
+        <div class="flip-card"><span id="clock-m">00</span></div>
+      </div>
+
+      <div class="pill-label">Choose</div>
     </div>
 
     <!-- POMODORO VIEW -->
-    <div id="pomodoro-view" class="view-section">
+    <div id="pomodoro-view" class="view-section active-view">
       <div class="mode-selector">
         <button class="mode-btn active" data-mode="work" onclick="setMode('work')">Work</button>
         <button class="mode-btn" data-mode="shortBreak" onclick="setMode('shortBreak')">Short Break</button>
@@ -389,41 +443,45 @@
   </div>
 
   <script>
-    // --- Navigation Logic ---
+    // --- Smooth Navigation Logic ---
     function switchView(view) {
-      document.getElementById('home-view').classList.add('hidden');
-      document.getElementById('pomodoro-view').classList.add('hidden');
+      document.getElementById('home-view').classList.remove('active-view');
+      document.getElementById('pomodoro-view').classList.remove('active-view');
       document.getElementById('nav-btn-home').classList.remove('active');
       document.getElementById('nav-btn-pomodoro').classList.remove('active');
 
       if (view === 'home') {
-        document.getElementById('home-view').classList.remove('hidden');
+        document.getElementById('home-view').classList.add('active-view');
         document.getElementById('nav-btn-home').classList.add('active');
         document.title = "Clock & Pomodoro";
       } else {
-        document.getElementById('pomodoro-view').classList.remove('hidden');
+        document.getElementById('pomodoro-view').classList.add('active-view');
         document.getElementById('nav-btn-pomodoro').classList.add('active');
         updateDisplay();
       }
     }
 
-    // --- Simple Clock Logic ---
+    // --- Flip Clock Logic ---
     function updateClock() {
       const now = new Date();
       let hours = now.getHours();
       let minutes = now.getMinutes();
-      const ampm = hours >= 12 ? 'PM' : 'AM';
       
+      // 12-hour format logic (No AM/PM text required)
       hours = hours % 12;
       hours = hours ? hours : 12; 
+      
+      // Pad with zero for aesthetic flip clock look
+      hours = hours < 10 ? '0' + hours : hours;
       minutes = minutes < 10 ? '0' + minutes : minutes;
       
-      document.getElementById('real-time-clock').innerHTML = `${hours}:${minutes} <span class="ampm-text">${ampm}</span>`;
+      document.getElementById('clock-h').textContent = hours;
+      document.getElementById('clock-m').textContent = minutes;
     }
     setInterval(updateClock, 1000);
-    updateClock();
+    updateClock(); // Run immediately
 
-    // --- Pomodoro Logic ---
+    // --- Pomodoro Logic (With State Saving) ---
     let timer;
     let isRunning = false;
     let currentMode = 'work'; 
@@ -448,7 +506,7 @@
       const minutes = Math.floor(timeRemaining / 60);
       const seconds = timeRemaining % 60;
       display.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-      if (!document.getElementById('pomodoro-view').classList.contains('hidden')) {
+      if (document.getElementById('pomodoro-view').classList.contains('active-view')) {
         document.title = `${display.textContent} - Pomodoro`;
       }
     }
@@ -519,8 +577,9 @@
       updateDisplay();
     }
 
+    // FIX: Smooth Settings Transition using CSS classes
     function toggleSettings() {
-      settingsPanel.style.display = settingsPanel.style.display === 'block' ? 'none' : 'block';
+      settingsPanel.classList.toggle('show');
     }
 
     function toggleTheme() {
@@ -559,40 +618,4 @@
           console.error("Custom audio playback failed:", e);
           playDefaultBeep(); 
         });
-      } else {
-        playDefaultBeep();
-      }
-    }
-
-    function playDefaultBeep() {
-      const AudioContext = window.AudioContext || window.webkitAudioContext;
-      if (!AudioContext) {
-        alert('Time is up!');
-        return;
-      }
-      const ctx = new AudioContext();
-      
-      for(let i = 0; i < 3; i++) {
-        setTimeout(() => {
-          const osc = ctx.createOscillator();
-          const gainNode = ctx.createGain();
-          
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(880, ctx.currentTime); 
-          
-          gainNode.gain.setValueAtTime(1, ctx.currentTime);
-          gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-          
-          osc.connect(gainNode);
-          gainNode.connect(ctx.destination);
-          
-          osc.start(ctx.currentTime);
-          osc.stop(ctx.currentTime + 0.3);
-        }, i * 500);
-      }
-    }
-
-    updateDisplay();
-  </script>
-</body>
-</html>
+      } e
