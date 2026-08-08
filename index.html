@@ -602,4 +602,40 @@
     // with a syntax error and silently disabled every button on the page.
     window.playDefaultBeep = function() {
       const AudioContext = window.AudioContext || window.webkitAudioContext;
-      if (!Au
+      if (!AudioContext) return;
+      const audioCtx = new AudioContext();
+
+      // Play three short beeps in sequence
+      const playBeep = (startTime) => {
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(880, startTime);
+
+        gainNode.gain.setValueAtTime(0, startTime);
+        gainNode.gain.linearRampToValueAtTime(0.3, startTime + 0.02);
+        gainNode.gain.linearRampToValueAtTime(0, startTime + 0.3);
+
+        oscillator.start(startTime);
+        oscillator.stop(startTime + 0.3);
+      };
+
+      const now = audioCtx.currentTime;
+      playBeep(now);
+      playBeep(now + 0.4);
+      playBeep(now + 0.8);
+    };
+
+    // FIX: the wall clock on the Home tab was never actually started —
+    // updateClock() was defined but nothing called it. Now it ticks every second.
+    window.updateClock();
+    clockInterval = setInterval(window.updateClock, 1000);
+
+    // Initialize the Pomodoro display on load
+    window.updateDisplay();
+  </script>
+</body>
+</html>
