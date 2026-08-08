@@ -6,13 +6,13 @@
   <title>Glass M3 Pomodoro</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
 
   <style>
     :root {
-      --md-sys-color-background-grad: transparent;
+      --md-sys-color-background-grad: linear-gradient(135deg, #eaddff 0%, #ffdbec 100%);
       --md-sys-color-on-background: #1C1B1F;
-      --md-sys-color-surface: rgba(255, 255, 255, 0.4); 
+      --md-sys-color-surface: rgba(255, 255, 255, 0.4);
       --md-sys-color-surface-container: rgba(234, 221, 255, 0.5);
       --md-sys-color-primary: #6750A4;
       --md-sys-color-on-primary: #FFFFFF;
@@ -23,9 +23,9 @@
     }
 
     [data-theme="dark"] {
-      --md-sys-color-background-grad: transparent;
+      --md-sys-color-background-grad: linear-gradient(135deg, #141218 0%, #381e72 100%);
       --md-sys-color-on-background: #E6E0E9;
-      --md-sys-color-surface: rgba(43, 41, 48, 0.4); 
+      --md-sys-color-surface: rgba(43, 41, 48, 0.4);
       --md-sys-color-surface-container: rgba(74, 68, 88, 0.5);
       --md-sys-color-primary: #D0BCFF;
       --md-sys-color-on-primary: #381E72;
@@ -40,18 +40,19 @@
       margin: 0;
       padding: 0;
       font-family: 'Roboto', sans-serif;
-      -webkit-tap-highlight-color: transparent; 
+      -webkit-tap-highlight-color: transparent;
     }
 
     body {
-      background: transparent;
+      background: var(--md-sys-color-background-grad);
       color: var(--md-sys-color-on-background);
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
       padding: 16px;
-      transition: color 0.3s ease;
+      transition: background 0.5s ease, color 0.3s ease;
+      background-attachment: fixed;
     }
 
     .app-container {
@@ -96,7 +97,9 @@
       }
     }
 
-    /* ===== Flip Clock ===== */
+    /* =========================================================
+       REAL FLIP CLOCK
+       ========================================================= */
 
     .flip-clock {
       display: flex;
@@ -107,16 +110,21 @@
 
     .flip-card {
       position: relative;
+      width: 140px;
+      height: 108px;
+      perspective: 1000px;
       background: var(--md-sys-color-secondary-container);
       color: var(--md-sys-color-on-secondary-container);
       border: 1px solid var(--glass-border);
       border-radius: 16px;
       box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-      width: 140px;
-      height: 108px;
       overflow: hidden;
     }
 
+    /*
+      Static digit.
+      This is the number visible after the animation has completed.
+    */
     .flip-digit {
       position: absolute;
       inset: 0;
@@ -126,6 +134,93 @@
       font-size: 72px;
       font-weight: 700;
       line-height: 1;
+      z-index: 1;
+    }
+
+    /*
+      Temporary animated flap.
+    */
+    .flip-flap {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 50%;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      background: var(--md-sys-color-secondary-container);
+      color: var(--md-sys-color-on-secondary-container);
+      border-radius: 16px 16px 0 0;
+      border-bottom: 1px solid rgba(0,0,0,0.12);
+      transform-origin: bottom center;
+      transform: rotateX(0deg);
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      z-index: 3;
+    }
+
+    .flip-flap span {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 216px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 72px;
+      font-weight: 700;
+      line-height: 108px;
+    }
+
+    .flip-flap.animate {
+      animation: flipDown 0.42s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    @keyframes flipDown {
+      0% {
+        transform: rotateX(0deg);
+      }
+
+      100% {
+        transform: rotateX(-90deg);
+      }
+    }
+
+    /*
+      Bottom incoming half.
+      Appears behind the flap while the top half flips.
+    */
+    .flip-bottom {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 50%;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      background: var(--md-sys-color-secondary-container);
+      color: var(--md-sys-color-on-secondary-container);
+      border-radius: 0 0 16px 16px;
+      z-index: 2;
+    }
+
+    .flip-bottom span {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 216px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 72px;
+      font-weight: 700;
+      line-height: 108px;
     }
 
     .colon {
@@ -173,7 +268,9 @@
       pointer-events: none;
     }
 
-    /* Pomodoro UI */
+    /* =========================================================
+       POMODORO
+       ========================================================= */
 
     .mode-selector {
       display: flex;
@@ -230,7 +327,6 @@
       justify-content: center;
       gap: 8px;
       transition: opacity 0.2s, transform 0.1s, background-color 0.3s ease;
-      border: 1px solid transparent;
       outline: none;
     }
 
@@ -242,7 +338,7 @@
       background-color: var(--md-sys-color-primary);
       color: var(--md-sys-color-on-primary);
       padding: 16px 20px;
-      flex: 1; 
+      flex: 1;
       min-width: 0;
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
@@ -258,8 +354,10 @@
       width: 56px;
       height: 56px;
       border-radius: 50%;
-      flex-shrink: 0; 
+      flex-shrink: 0;
     }
+
+    /* Settings */
 
     .settings-section {
       width: 100%;
@@ -384,6 +482,8 @@
       background-color: var(--md-sys-color-on-primary);
     }
 
+    /* Bottom nav */
+
     .bottom-nav {
       display: flex;
       width: 100%;
@@ -421,6 +521,43 @@
       color: var(--md-sys-color-primary);
       background: var(--md-sys-color-secondary-container);
     }
+
+    /* Small screens */
+
+    @media (max-width: 380px) {
+      .app-container {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+
+      .flip-clock {
+        gap: 8px;
+      }
+
+      .flip-card {
+        width: 120px;
+        height: 96px;
+      }
+
+      .flip-digit,
+      .flip-flap span,
+      .flip-bottom span {
+        font-size: 62px;
+      }
+
+      .flip-flap span,
+      .flip-bottom span {
+        height: 192px;
+      }
+
+      .colon {
+        font-size: 50px;
+      }
+
+      .timer-display {
+        font-size: 68px;
+      }
+    }
   </style>
 </head>
 
@@ -428,94 +565,70 @@
 
   <div class="app-container">
 
-    <!-- HOME VIEW -->
+    <!-- =====================================================
+         HOME VIEW
+         ===================================================== -->
+
     <div id="home-view" class="view-section">
 
       <div class="flip-clock">
 
-        <div class="flip-card">
+        <div class="flip-card" id="hour-card">
           <div class="flip-digit" id="clock-h">12</div>
         </div>
 
         <span class="colon">:</span>
 
-        <div class="flip-card">
+        <div class="flip-card" id="minute-card">
           <div class="flip-digit" id="clock-m">00</div>
         </div>
 
       </div>
 
       <div class="tz-wrapper">
-
-        <select
-          id="tz-select"
-          class="tz-select"
-          onchange="window.onTimezoneChange()">
-        </select>
-
-        <span class="material-symbols-outlined tz-chevron">
-          expand_more
-        </span>
-
+        <select id="tz-select" class="tz-select" onchange="window.onTimezoneChange()"></select>
+        <span class="material-symbols-outlined tz-chevron">expand_more</span>
       </div>
 
     </div>
 
 
-    <!-- POMODORO VIEW -->
+    <!-- =====================================================
+         POMODORO VIEW
+         ===================================================== -->
 
     <div id="pomodoro-view" class="view-section active-view">
 
       <div class="mode-selector">
-
-        <button
-          class="mode-btn active"
-          id="btn-work"
-          onclick="setMode('work')">
+        <button class="mode-btn active" id="btn-work" onclick="setMode('work')">
           Work
         </button>
 
-        <button
-          class="mode-btn"
-          id="btn-short"
-          onclick="setMode('shortBreak')">
+        <button class="mode-btn" id="btn-short" onclick="setMode('shortBreak')">
           Short Break
         </button>
 
-        <button
-          class="mode-btn"
-          id="btn-long"
-          onclick="setMode('longBreak')">
+        <button class="mode-btn" id="btn-long" onclick="setMode('longBreak')">
           Long Break
         </button>
-
       </div>
 
 
-      <div
-        class="timer-display"
-        id="time-display">
+      <div class="timer-display" id="time-display">
         25:00
       </div>
 
 
       <div class="controls">
 
-        <button
-          class="btn btn-primary"
-          id="start-btn"
-          onclick="toggleTimer()">
-
-          <span
-            class="material-symbols-outlined"
-            id="play-icon">
+        <button class="btn btn-primary" id="start-btn" onclick="toggleTimer()">
+          <span class="material-symbols-outlined" id="play-icon">
             play_arrow
           </span>
 
           <span id="start-text">
             Start
           </span>
-
         </button>
 
 
@@ -547,20 +660,18 @@
 
       <!-- SETTINGS -->
 
-      <div
-        class="settings-section"
-        id="settings-panel">
+      <div class="settings-section" id="settings-panel">
 
         <div class="settings-title">
-
           <span class="material-symbols-outlined">
             tune
           </span>
 
           Settings
-
         </div>
 
+
+        <!-- DARK THEME -->
 
         <div class="input-group">
 
@@ -582,6 +693,8 @@
         </div>
 
 
+        <!-- AUDIO -->
+
         <div class="input-group">
 
           <label>
@@ -593,37 +706,40 @@
             <button
               class="btn btn-secondary sound-btn"
               onclick="document.getElementById('audio-upload').click()">
+
               Choose File
+
             </button>
+
 
             <button
               class="btn btn-secondary sound-btn"
               onclick="useDefaultSound()">
+
               Default
+
             </button>
 
           </div>
-
 
           <input
             type="file"
             id="audio-upload"
             accept="audio/*"
-            style="display: none;"
+            style="display:none"
             onchange="handleAudioUpload(event)">
 
         </div>
 
 
-        <div
-          class="sound-status"
-          id="sound-status">
+        <div class="sound-status" id="sound-status">
           Using Default Sound
         </div>
 
-
         <audio id="custom-audio-player"></audio>
 
+
+        <!-- WORK -->
 
         <div class="input-group">
 
@@ -643,6 +759,8 @@
         </div>
 
 
+        <!-- SHORT BREAK -->
+
         <div class="input-group">
 
           <label for="short-break-time">
@@ -660,6 +778,8 @@
 
         </div>
 
+
+        <!-- LONG BREAK -->
 
         <div class="input-group">
 
@@ -683,7 +803,9 @@
     </div>
 
 
-    <!-- BOTTOM NAVIGATION -->
+    <!-- =====================================================
+         BOTTOM NAV
+         ===================================================== -->
 
     <div class="bottom-nav">
 
@@ -721,26 +843,24 @@
 
   <script>
 
-    // ===== Persistence helpers =====
+    /* =========================================================
+       LOCAL STORAGE
+       ========================================================= */
 
     const STORAGE_KEY = 'glassPomodoroSettings';
-
 
     function loadSettings() {
 
       try {
 
-        const raw =
-          localStorage.getItem(STORAGE_KEY);
+        const raw = localStorage.getItem(STORAGE_KEY);
 
-        return raw
-          ? JSON.parse(raw)
-          : {};
+        return raw ? JSON.parse(raw) : {};
 
       } catch (e) {
 
         console.warn(
-          'Storage unavailable, settings will not persist:',
+          'Storage unavailable:',
           e
         );
 
@@ -755,15 +875,13 @@
 
       try {
 
-        const current =
-          loadSettings();
+        const current = loadSettings();
 
-        const merged =
-          Object.assign(
-            {},
-            current,
-            partial
-          );
+        const merged = Object.assign(
+          {},
+          current,
+          partial
+        );
 
         localStorage.setItem(
           STORAGE_KEY,
@@ -773,7 +891,7 @@
       } catch (e) {
 
         console.warn(
-          'Storage unavailable, settings will not persist:',
+          'Storage unavailable:',
           e
         );
 
@@ -782,20 +900,21 @@
     }
 
 
-    const savedSettings =
-      loadSettings();
+    const savedSettings = loadSettings();
 
 
-    // CORE VARIABLES
+    /* =========================================================
+       CORE VARIABLES
+       ========================================================= */
 
     let timer;
     let clockInterval;
+
     let isRunning = false;
 
     let currentMode = 'work';
 
-    let timeRemaining =
-      25 * 60;
+    let timeRemaining = 25 * 60;
 
     let savedTimes = {
       work: null,
@@ -821,6 +940,10 @@
     let customAudioUrl = null;
 
 
+    /* =========================================================
+       TIMEZONE
+       ========================================================= */
+
     const localTz =
       Intl.DateTimeFormat()
         .resolvedOptions()
@@ -830,8 +953,6 @@
     let selectedTimezone =
       savedSettings.timezone ?? '';
 
-
-    // TIMEZONE GROUPS
 
     const TIMEZONE_GROUPS = {
 
@@ -912,52 +1033,46 @@
 
       chooseOpt.value = '';
 
-      chooseOpt.textContent =
-        'Choose';
+      chooseOpt.textContent = 'Choose';
 
       select.appendChild(
         chooseOpt
       );
 
 
-      Object.keys(
-        TIMEZONE_GROUPS
-      ).forEach(groupName => {
+      Object.keys(TIMEZONE_GROUPS)
+        .forEach(groupName => {
 
-        const optgroup =
-          document.createElement(
-            'optgroup'
-          );
+          const optgroup =
+            document.createElement('optgroup');
 
-        optgroup.label =
-          groupName;
+          optgroup.label =
+            groupName;
 
 
-        TIMEZONE_GROUPS[groupName]
-          .forEach(([tz, label]) => {
+          TIMEZONE_GROUPS[groupName]
+            .forEach(([tz, label]) => {
 
-            const opt =
-              document.createElement(
-                'option'
+              const opt =
+                document.createElement('option');
+
+              opt.value = tz;
+
+              opt.textContent =
+                label;
+
+              optgroup.appendChild(
+                opt
               );
 
-            opt.value = tz;
-
-            opt.textContent =
-              label;
-
-            optgroup.appendChild(
-              opt
-            );
-
-          });
+            });
 
 
-        select.appendChild(
-          optgroup
-        );
+          select.appendChild(
+            optgroup
+          );
 
-      });
+        });
 
 
       select.value =
@@ -987,109 +1102,159 @@
       };
 
 
-    // VIEW SWITCHING
+    /* =========================================================
+       REAL FLIP CLOCK ENGINE
+       ========================================================= */
 
-    window.switchView =
-      function(view) {
-
-        document
-          .getElementById(
-            'home-view'
-          )
-          .classList
-          .remove(
-            'active-view'
-          );
+    let previousHour = null;
+    let previousMinute = null;
 
 
-        document
-          .getElementById(
-            'pomodoro-view'
-          )
-          .classList
-          .remove(
-            'active-view'
-          );
+    function animateFlip(
+      cardId,
+      digitId,
+      oldValue,
+      newValue
+    ) {
+
+      if (
+        oldValue === null ||
+        oldValue === newValue
+      ) {
+
+        document.getElementById(
+          digitId
+        ).textContent = newValue;
+
+        return;
+
+      }
 
 
-        document
-          .getElementById(
-            'nav-btn-home'
-          )
-          .classList
-          .remove(
-            'active'
-          );
+      const card =
+        document.getElementById(
+          cardId
+        );
+
+      const digit =
+        document.getElementById(
+          digitId
+        );
 
 
-        document
-          .getElementById(
-            'nav-btn-pomodoro'
-          )
-          .classList
-          .remove(
-            'active'
-          );
+      /*
+        Update the permanent digit first.
+      */
+
+      digit.textContent =
+        newValue;
 
 
-        if (view === 'home') {
+      /*
+        Remove previous temporary elements.
+      */
 
-          document
-            .getElementById(
-              'home-view'
-            )
-            .classList
-            .add(
-              'active-view'
-            );
-
-
-          document
-            .getElementById(
-              'nav-btn-home'
-            )
-            .classList
-            .add(
-              'active'
-            );
+      card
+        .querySelectorAll(
+          '.flip-flap, .flip-bottom'
+        )
+        .forEach(el =>
+          el.remove()
+        );
 
 
-          document.title =
-            "Clock & Pomodoro";
+      /*
+        Bottom half shows the new number.
+      */
+
+      const bottom =
+        document.createElement(
+          'div'
+        );
+
+      bottom.className =
+        'flip-bottom';
 
 
-          window.updateClock();
+      const bottomText =
+        document.createElement(
+          'span'
+        );
 
-        } else {
+      bottomText.textContent =
+        newValue;
 
-          document
-            .getElementById(
-              'pomodoro-view'
-            )
-            .classList
-            .add(
-              'active-view'
-            );
+      bottom.appendChild(
+        bottomText
+      );
 
-
-          document
-            .getElementById(
-              'nav-btn-pomodoro'
-            )
-            .classList
-            .add(
-              'active'
-            );
+      card.appendChild(
+        bottom
+      );
 
 
-          window.updateDisplay();
+      /*
+        Top flap starts with old number.
+      */
 
+      const flap =
+        document.createElement(
+          'div'
+        );
+
+      flap.className =
+        'flip-flap';
+
+
+      const flapText =
+        document.createElement(
+          'span'
+        );
+
+      flapText.textContent =
+        oldValue;
+
+      flap.appendChild(
+        flapText
+      );
+
+      card.appendChild(
+        flap
+      );
+
+
+      /*
+        Force layout before animation.
+      */
+
+      void flap.offsetWidth;
+
+
+      flap.classList.add(
+        'animate'
+      );
+
+
+      /*
+        Remove temporary elements
+        when animation finishes.
+      */
+
+      flap.addEventListener(
+        'animationend',
+        () => {
+
+          flap.remove();
+          bottom.remove();
+
+        },
+        {
+          once: true
         }
+      );
 
-      };
+    }
 
-
-    // CLOCK
 
     window.updateClock =
       function() {
@@ -1126,25 +1291,130 @@
           ).value;
 
 
-        document
-          .getElementById(
-            'clock-h'
-          )
-          .textContent =
+        /*
+          Keep the values two digits
+          for consistent animation.
+        */
+
+        hour =
+          hour.padStart(
+            2,
+            '0'
+          );
+
+        minute =
+          minute.padStart(
+            2,
+            '0'
+          );
+
+
+        /*
+          Animate only when the value
+          actually changes.
+        */
+
+        animateFlip(
+          'hour-card',
+          'clock-h',
+          previousHour,
+          hour
+        );
+
+
+        animateFlip(
+          'minute-card',
+          'clock-m',
+          previousMinute,
+          minute
+        );
+
+
+        previousHour =
           hour;
 
-
-        document
-          .getElementById(
-            'clock-m'
-          )
-          .textContent =
+        previousMinute =
           minute;
 
       };
 
 
-    // POMODORO DISPLAY
+    /* =========================================================
+       VIEW SWITCHING
+       ========================================================= */
+
+    window.switchView =
+      function(view) {
+
+        document
+          .getElementById('home-view')
+          .classList.remove(
+            'active-view'
+          );
+
+        document
+          .getElementById('pomodoro-view')
+          .classList.remove(
+            'active-view'
+          );
+
+
+        document
+          .getElementById('nav-btn-home')
+          .classList.remove(
+            'active'
+          );
+
+        document
+          .getElementById('nav-btn-pomodoro')
+          .classList.remove(
+            'active'
+          );
+
+
+        if (view === 'home') {
+
+          document
+            .getElementById('home-view')
+            .classList.add(
+              'active-view'
+            );
+
+          document
+            .getElementById('nav-btn-home')
+            .classList.add(
+              'active'
+            );
+
+          document.title =
+            "Clock & Pomodoro";
+
+          window.updateClock();
+
+        } else {
+
+          document
+            .getElementById('pomodoro-view')
+            .classList.add(
+              'active-view'
+            );
+
+          document
+            .getElementById('nav-btn-pomodoro')
+            .classList.add(
+              'active'
+            );
+
+          window.updateDisplay();
+
+        }
+
+      };
+
+
+    /* =========================================================
+       POMODORO DISPLAY
+       ========================================================= */
 
     window.updateDisplay =
       function() {
@@ -1195,38 +1465,34 @@
       };
 
 
-    // DURATIONS
+    /* =========================================================
+       POMODORO DURATIONS
+       ========================================================= */
 
     window.updateDurations =
       function() {
 
         durations.work =
           parseInt(
-            document
-              .getElementById(
-                'work-time'
-              )
-              .value
+            document.getElementById(
+              'work-time'
+            ).value
           ) || 25;
 
 
         durations.shortBreak =
           parseInt(
-            document
-              .getElementById(
-                'short-break-time'
-              )
-              .value
+            document.getElementById(
+              'short-break-time'
+            ).value
           ) || 5;
 
 
         durations.longBreak =
           parseInt(
-            document
-              .getElementById(
-                'long-break-time'
-              )
-              .value
+            document.getElementById(
+              'long-break-time'
+            ).value
           ) || 15;
 
 
@@ -1245,23 +1511,21 @@
 
 
         if (!isRunning) {
-
           window.resetTimer();
-
         }
 
       };
 
 
-    // MODE
+    /* =========================================================
+       MODE
+       ========================================================= */
 
     window.setMode =
       function(mode) {
 
         if (isRunning) {
-
           window.toggleTimer();
-
         }
 
 
@@ -1290,8 +1554,7 @@
             .getElementById(
               'btn-work'
             )
-            .classList
-            .add(
+            .classList.add(
               'active'
             );
 
@@ -1304,8 +1567,7 @@
             .getElementById(
               'btn-short'
             )
-            .classList
-            .add(
+            .classList.add(
               'active'
             );
 
@@ -1318,8 +1580,7 @@
             .getElementById(
               'btn-long'
             )
-            .classList
-            .add(
+            .classList.add(
               'active'
             );
 
@@ -1346,7 +1607,9 @@
       };
 
 
-    // TIMER
+    /* =========================================================
+       TIMER
+       ========================================================= */
 
     window.toggleTimer =
       function() {
@@ -1388,60 +1651,56 @@
 
 
           timer =
-            setInterval(() => {
+            setInterval(
+              () => {
 
-              timeRemaining--;
+                timeRemaining--;
 
-              window.updateDisplay();
-
-
-              if (
-                timeRemaining <= 0
-              ) {
-
-                clearInterval(
-                  timer
-                );
-
-                isRunning =
-                  false;
+                window.updateDisplay();
 
 
-                startBtnText.textContent =
-                  'Start';
+                if (
+                  timeRemaining <= 0
+                ) {
+
+                  clearInterval(
+                    timer
+                  );
+
+                  isRunning = false;
+
+                  startBtnText.textContent =
+                    'Start';
+
+                  playIcon.textContent =
+                    'play_arrow';
 
 
-                playIcon.textContent =
-                  'play_arrow';
+                  savedTimes[
+                    currentMode
+                  ] = null;
 
 
-                savedTimes[
-                  currentMode
-                ] = null;
+                  window.playAlarm();
 
+                  window.resetTimer();
 
-                window.playAlarm();
+                }
 
-                window.resetTimer();
-
-              }
-
-            }, 1000);
+              },
+              1000
+            );
 
         }
 
       };
 
 
-    // RESET
-
     window.resetTimer =
       function() {
 
         if (isRunning) {
-
           window.toggleTimer();
-
         }
 
 
@@ -1451,9 +1710,8 @@
 
 
         timeRemaining =
-          durations[
-            currentMode
-          ] * 60;
+          durations[currentMode] *
+          60;
 
 
         window.updateDisplay();
@@ -1461,7 +1719,9 @@
       };
 
 
-    // SETTINGS
+    /* =========================================================
+       SETTINGS PANEL
+       ========================================================= */
 
     window.toggleSettings =
       function() {
@@ -1470,31 +1730,29 @@
           .getElementById(
             'settings-panel'
           )
-          .classList
-          .toggle(
+          .classList.toggle(
             'show'
           );
 
       };
 
 
-    // THEME
+    /* =========================================================
+       DARK THEME
+       ========================================================= */
 
     window.toggleTheme =
       function() {
 
         const isDark =
-          document
-            .getElementById(
-              'theme-toggle'
-            )
-            .checked;
+          document.getElementById(
+            'theme-toggle'
+          ).checked;
 
 
         if (isDark) {
 
-          document
-            .documentElement
+          document.documentElement
             .setAttribute(
               'data-theme',
               'dark'
@@ -1502,8 +1760,7 @@
 
         } else {
 
-          document
-            .documentElement
+          document.documentElement
             .removeAttribute(
               'data-theme'
             );
@@ -1512,20 +1769,249 @@
 
 
         saveSettings({
-          darkTheme:
-            isDark
+          darkTheme: isDark
         });
 
       };
 
 
-    // AUDIO UPLOAD
+    /* =========================================================
+       INDEXEDDB AUDIO STORAGE
+       ========================================================= */
+
+    const AUDIO_DB_NAME =
+      'glassPomodoroAudioDB';
+
+    const AUDIO_STORE_NAME =
+      'audio';
+
+
+    function openAudioDB() {
+
+      return new Promise(
+        (resolve, reject) => {
+
+          const request =
+            indexedDB.open(
+              AUDIO_DB_NAME,
+              1
+            );
+
+
+          request.onupgradeneeded =
+            function(event) {
+
+              const db =
+                event.target.result;
+
+
+              if (
+                !db.objectStoreNames.contains(
+                  AUDIO_STORE_NAME
+                )
+              ) {
+
+                db.createObjectStore(
+                  AUDIO_STORE_NAME
+                );
+
+              }
+
+            };
+
+
+          request.onsuccess =
+            function() {
+
+              resolve(
+                request.result
+              );
+
+            };
+
+
+          request.onerror =
+            function() {
+
+              reject(
+                request.error
+              );
+
+            };
+
+        }
+      );
+
+    }
+
+
+    async function saveAudioFile(
+      file
+    ) {
+
+      const db =
+        await openAudioDB();
+
+
+      return new Promise(
+        (resolve, reject) => {
+
+          const transaction =
+            db.transaction(
+              AUDIO_STORE_NAME,
+              'readwrite'
+            );
+
+
+          const store =
+            transaction.objectStore(
+              AUDIO_STORE_NAME
+            );
+
+
+          const request =
+            store.put(
+              {
+                blob: file,
+                name: file.name,
+                type: file.type
+              },
+              'customSound'
+            );
+
+
+          request.onsuccess =
+            () => resolve();
+
+
+          request.onerror =
+            () => reject(
+              request.error
+            );
+
+        }
+      );
+
+    }
+
+
+    async function loadAudioFile() {
+
+      const db =
+        await openAudioDB();
+
+
+      return new Promise(
+        (resolve, reject) => {
+
+          const transaction =
+            db.transaction(
+              AUDIO_STORE_NAME,
+              'readonly'
+            );
+
+
+          const store =
+            transaction.objectStore(
+              AUDIO_STORE_NAME
+            );
+
+
+          const request =
+            store.get(
+              'customSound'
+            );
+
+
+          request.onsuccess =
+            () => {
+
+              resolve(
+                request.result || null
+              );
+
+            };
+
+
+          request.onerror =
+            () => reject(
+              request.error
+            );
+
+        }
+      );
+
+    }
+
+
+    async function deleteAudioFile() {
+
+      try {
+
+        const db =
+          await openAudioDB();
+
+
+        await new Promise(
+          (resolve, reject) => {
+
+            const transaction =
+              db.transaction(
+                AUDIO_STORE_NAME,
+                'readwrite'
+              );
+
+
+            const store =
+              transaction.objectStore(
+                AUDIO_STORE_NAME
+              );
+
+
+            const request =
+              store.delete(
+                'customSound'
+              );
+
+
+            request.onsuccess =
+              () => resolve();
+
+
+            request.onerror =
+              () => reject(
+                request.error
+              );
+
+          }
+        );
+
+      } catch (e) {
+
+        console.warn(
+          'Could not delete saved audio:',
+          e
+        );
+
+      }
+
+    }
+
+
+    /* =========================================================
+       AUDIO UPLOAD
+       ========================================================= */
 
     window.handleAudioUpload =
-      function(event) {
+      async function(event) {
 
         const file =
           event.target.files[0];
+
+
+        if (!file) {
+          return;
+        }
 
 
         const audioPlayer =
@@ -1540,7 +2026,17 @@
           );
 
 
-        if (file) {
+        try {
+
+          /*
+            Save the actual File/Blob
+            into IndexedDB.
+          */
+
+          await saveAudioFile(
+            file
+          );
+
 
           if (customAudioUrl) {
 
@@ -1581,47 +2077,157 @@
           soundStatus.textContent =
             'Custom: ' + fileName;
 
+
+          saveSettings({
+            customAudioName:
+              file.name
+          });
+
+
+        } catch (error) {
+
+          console.error(
+            'Could not save audio:',
+            error
+          );
+
+
+          soundStatus.textContent =
+            'Could not save audio';
+
         }
 
       };
 
 
-    // DEFAULT SOUND
+    /* =========================================================
+       DEFAULT SOUND
+       ========================================================= */
 
     window.useDefaultSound =
-      function() {
+      async function() {
 
-        customAudioUrl =
-          null;
+        customAudioUrl = null;
 
 
-        document
-          .getElementById(
+        const audioPlayer =
+          document.getElementById(
             'custom-audio-player'
-          )
-          .removeAttribute(
-            'src'
           );
 
 
-        document
-          .getElementById(
-            'sound-status'
-          )
-          .textContent =
+        audioPlayer.removeAttribute(
+          'src'
+        );
+
+
+        document.getElementById(
+          'sound-status'
+        ).textContent =
           'Using Default Sound';
 
 
-        document
-          .getElementById(
-            'audio-upload'
-          )
-          .value = '';
+        document.getElementById(
+          'audio-upload'
+        ).value = '';
+
+
+        try {
+
+          await deleteAudioFile();
+
+        } catch (e) {
+
+          console.warn(e);
+
+        }
+
+
+        saveSettings({
+          customAudioName: null
+        });
 
       };
 
 
-    // PLAY ALARM
+    /* =========================================================
+       LOAD SAVED AUDIO
+       ========================================================= */
+
+    async function restoreSavedAudio() {
+
+      try {
+
+        const savedAudio =
+          await loadAudioFile();
+
+
+        if (
+          !savedAudio ||
+          !savedAudio.blob
+        ) {
+
+          return;
+
+        }
+
+
+        customAudioUrl =
+          URL.createObjectURL(
+            savedAudio.blob
+          );
+
+
+        const audioPlayer =
+          document.getElementById(
+            'custom-audio-player'
+          );
+
+
+        audioPlayer.src =
+          customAudioUrl;
+
+
+        let fileName =
+          savedAudio.name ||
+          savedSettings.customAudioName ||
+          'Custom Sound';
+
+
+        if (
+          fileName.length > 20
+        ) {
+
+          fileName =
+            fileName.substring(
+              0,
+              17
+            ) + '...';
+
+        }
+
+
+        document.getElementById(
+          'sound-status'
+        ).textContent =
+          'Custom: ' + fileName;
+
+
+      } catch (error) {
+
+        console.warn(
+          'Could not restore saved audio:',
+          error
+        );
+
+      }
+
+    }
+
+
+    /* =========================================================
+       PLAY ALARM
+       ========================================================= */
 
     window.playAlarm =
       function() {
@@ -1634,18 +2240,24 @@
 
         if (customAudioUrl) {
 
+          audioPlayer.currentTime = 0;
+
+
           audioPlayer
             .play()
-            .catch(e => {
+            .catch(
+              error => {
 
-              console.error(
-                "Custom audio playback failed:",
-                e
-              );
+                console.error(
+                  'Custom audio playback failed:',
+                  error
+                );
 
-              window.playDefaultBeep();
+                window.playDefaultBeep();
 
-            });
+              }
+            );
+
 
         } else {
 
@@ -1656,7 +2268,9 @@
       };
 
 
-    // DEFAULT BEEP
+    /* =========================================================
+       DEFAULT BEEP
+       ========================================================= */
 
     window.playDefaultBeep =
       function() {
@@ -1666,8 +2280,9 @@
           window.webkitAudioContext;
 
 
-        if (!AudioContext)
+        if (!AudioContext) {
           return;
+        }
 
 
         const audioCtx =
@@ -1756,29 +2371,25 @@
       };
 
 
-    // INIT
+    /* =========================================================
+       INITIALIZATION
+       ========================================================= */
 
-    document
-      .getElementById(
-        'work-time'
-      )
-      .value =
+    document.getElementById(
+      'work-time'
+    ).value =
       durations.work;
 
 
-    document
-      .getElementById(
-        'short-break-time'
-      )
-      .value =
+    document.getElementById(
+      'short-break-time'
+    ).value =
       durations.shortBreak;
 
 
-    document
-      .getElementById(
-        'long-break-time'
-      )
-      .value =
+    document.getElementById(
+      'long-break-time'
+    ).value =
       durations.longBreak;
 
 
@@ -1786,19 +2397,18 @@
       durations.work * 60;
 
 
-    // RESTORE DARK THEME
+    /* Restore theme */
 
-    if (savedSettings.darkTheme) {
+    if (
+      savedSettings.darkTheme
+    ) {
 
-      document
-        .getElementById(
-          'theme-toggle'
-        )
-        .checked = true;
+      document.getElementById(
+        'theme-toggle'
+      ).checked = true;
 
 
-      document
-        .documentElement
+      document.documentElement
         .setAttribute(
           'data-theme',
           'dark'
@@ -1807,9 +2417,25 @@
     }
 
 
+    /* Initialize timezone */
+
     populateTimezoneSelect();
 
+
+    /*
+      Initialize clock values.
+      First update does NOT animate because
+      previousHour / previousMinute are null.
+    */
+
     window.updateClock();
+
+
+    /*
+      Update every second.
+      Flip animation occurs only when
+      hour or minute actually changes.
+    */
 
     clockInterval =
       setInterval(
@@ -1817,7 +2443,17 @@
         1000
       );
 
+
+    /* Initialize Pomodoro */
+
     window.updateDisplay();
+
+
+    /*
+      Restore custom audio asynchronously.
+    */
+
+    restoreSavedAudio();
 
   </script>
 
