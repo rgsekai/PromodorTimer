@@ -8,7 +8,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
   <style>
     :root {
-      /* Material 3 Light Theme Tokens */
       --md-sys-color-background-grad: linear-gradient(135deg, #eaddff 0%, #ffdbec 100%);
       --md-sys-color-on-background: #1C1B1F;
       --md-sys-color-surface: rgba(255, 255, 255, 0.4); 
@@ -22,7 +21,6 @@
     }
 
     [data-theme="dark"] {
-      /* Material 3 Dark Theme Tokens */
       --md-sys-color-background-grad: linear-gradient(135deg, #141218 0%, #381e72 100%);
       --md-sys-color-on-background: #E6E0E9;
       --md-sys-color-surface: rgba(43, 41, 48, 0.4); 
@@ -40,7 +38,7 @@
       margin: 0;
       padding: 0;
       font-family: 'Roboto', sans-serif;
-      /* FIX: Removes the blue highlight box on mobile when tapping */
+      /* Removes the blue highlight box on mobile when tapping */
       -webkit-tap-highlight-color: transparent; 
     }
 
@@ -151,6 +149,7 @@
       letter-spacing: 1px;
       margin-bottom: 24px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      cursor: default;
     }
 
     /* Pomodoro Settings */
@@ -190,7 +189,7 @@
       text-shadow: 0 2px 10px rgba(0,0,0,0.05);
     }
 
-    /* FIX: Button Overflow & Sizing */
+    /* Button Overflow & Sizing */
     .controls {
       display: flex;
       gap: 12px;
@@ -222,7 +221,7 @@
       background-color: var(--md-sys-color-primary);
       color: var(--md-sys-color-on-primary);
       padding: 16px 20px;
-      flex: 1; /* Allows button to dynamically shrink/grow */
+      flex: 1; 
       min-width: 0;
       max-width: 160px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
@@ -239,10 +238,10 @@
       width: 56px;
       height: 56px;
       border-radius: 50%;
-      flex-shrink: 0; /* Prevents icons from squishing */
+      flex-shrink: 0; 
     }
 
-    /* FIX: Smooth Settings Panel Transition */
+    /* Smooth Settings Panel Transition */
     .settings-section {
       width: 100%;
       max-height: 0;
@@ -355,35 +354,33 @@
     
     <!-- HOME VIEW (FLIP CLOCK) -->
     <div id="home-view" class="view-section">
-      
       <div class="flip-clock">
         <div class="flip-card"><span id="clock-h">12</span></div>
         <span class="colon">:</span>
         <div class="flip-card"><span id="clock-m">00</span></div>
       </div>
-
       <div class="pill-label">Choose</div>
     </div>
 
     <!-- POMODORO VIEW -->
     <div id="pomodoro-view" class="view-section active-view">
       <div class="mode-selector">
-        <button class="mode-btn active" data-mode="work" onclick="setMode('work')">Work</button>
-        <button class="mode-btn" data-mode="shortBreak" onclick="setMode('shortBreak')">Short Break</button>
-        <button class="mode-btn" data-mode="longBreak" onclick="setMode('longBreak')">Long Break</button>
+        <button class="mode-btn active" id="btn-work">Work</button>
+        <button class="mode-btn" id="btn-short">Short Break</button>
+        <button class="mode-btn" id="btn-long">Long Break</button>
       </div>
 
       <div class="timer-display" id="time-display">25:00</div>
 
       <div class="controls">
-        <button class="btn btn-primary" id="start-btn" onclick="toggleTimer()">
+        <button class="btn btn-primary" id="start-btn">
           <span class="material-symbols-outlined" id="play-icon">play_arrow</span>
           <span id="start-text">Start</span>
         </button>
-        <button class="btn btn-secondary icon-btn" onclick="resetTimer()" title="Reset Timer">
+        <button class="btn btn-secondary icon-btn" id="reset-btn" title="Reset Timer">
           <span class="material-symbols-outlined">refresh</span>
         </button>
-        <button class="btn btn-secondary icon-btn" onclick="toggleSettings()" title="Settings">
+        <button class="btn btn-secondary icon-btn" id="settings-btn" title="Settings">
           <span class="material-symbols-outlined">settings</span>
         </button>
       </div>
@@ -397,7 +394,7 @@
         <div class="input-group">
           <label for="theme-toggle">Dark Theme</label>
           <label class="switch">
-            <input type="checkbox" id="theme-toggle" onchange="toggleTheme()">
+            <input type="checkbox" id="theme-toggle">
             <span class="slider"></span>
           </label>
         </div>
@@ -405,36 +402,36 @@
         <div class="input-group">
           <label>Alarm Sound</label>
           <div class="sound-btn-group">
-            <button class="btn btn-secondary sound-btn" onclick="document.getElementById('audio-upload').click()">Choose File</button>
-            <button class="btn btn-secondary sound-btn" onclick="useDefaultSound()">Default</button>
+            <button class="btn btn-secondary sound-btn" id="btn-choose-file">Choose File</button>
+            <button class="btn btn-secondary sound-btn" id="btn-default-sound">Default</button>
           </div>
-          <input type="file" id="audio-upload" accept="audio/*" style="display: none;" onchange="handleAudioUpload(event)">
+          <input type="file" id="audio-upload" accept="audio/*" style="display: none;">
         </div>
         <div class="sound-status" id="sound-status">Using Default Sound</div>
         <audio id="custom-audio-player"></audio>
 
         <div class="input-group">
           <label for="work-time">Work (Minutes)</label>
-          <input type="number" id="work-time" class="m3-input" value="25" min="1" max="90" onchange="updateDurations()">
+          <input type="number" id="work-time" class="m3-input" value="25" min="1" max="90">
         </div>
         <div class="input-group">
           <label for="short-break-time">Short Break (Minutes)</label>
-          <input type="number" id="short-break-time" class="m3-input" value="5" min="1" max="30" onchange="updateDurations()">
+          <input type="number" id="short-break-time" class="m3-input" value="5" min="1" max="30">
         </div>
         <div class="input-group">
           <label for="long-break-time">Long Break (Minutes)</label>
-          <input type="number" id="long-break-time" class="m3-input" value="15" min="1" max="60" onchange="updateDurations()">
+          <input type="number" id="long-break-time" class="m3-input" value="15" min="1" max="60">
         </div>
       </div>
     </div>
 
     <!-- BOTTOM NAVIGATION -->
     <div class="bottom-nav">
-      <button class="nav-tab" id="nav-btn-home" onclick="switchView('home')">
+      <button class="nav-tab" id="nav-btn-home">
         <span class="material-symbols-outlined">home</span>
         Home
       </button>
-      <button class="nav-tab active" id="nav-btn-pomodoro" onclick="switchView('pomodoro')">
+      <button class="nav-tab active" id="nav-btn-pomodoro">
         <span class="material-symbols-outlined">timer</span>
         Timer
       </button>
@@ -443,7 +440,26 @@
   </div>
 
   <script>
-    // --- Smooth Navigation Logic ---
+    // --- Core Variables ---
+    let timer;
+    let isRunning = false;
+    let currentMode = 'work'; 
+    let timeRemaining = 25 * 60; 
+    let savedTimes = { work: null, shortBreak: null, longBreak: null };
+    const durations = { work: 25, shortBreak: 5, longBreak: 15 };
+    let customAudioUrl = null;
+
+    // --- DOM Elements ---
+    const display = document.getElementById('time-display');
+    const startBtnText = document.getElementById('start-text');
+    const playIcon = document.getElementById('play-icon');
+    const settingsPanel = document.getElementById('settings-panel');
+    const audioPlayer = document.getElementById('custom-audio-player');
+    const soundStatus = document.getElementById('sound-status');
+    const clockH = document.getElementById('clock-h');
+    const clockM = document.getElementById('clock-m');
+
+    // --- Logic Functions ---
     function switchView(view) {
       document.getElementById('home-view').classList.remove('active-view');
       document.getElementById('pomodoro-view').classList.remove('active-view');
@@ -461,46 +477,20 @@
       }
     }
 
-    // --- Flip Clock Logic ---
     function updateClock() {
       const now = new Date();
       let hours = now.getHours();
       let minutes = now.getMinutes();
       
-      // 12-hour format logic (No AM/PM text required)
       hours = hours % 12;
       hours = hours ? hours : 12; 
       
-      // Pad with zero for aesthetic flip clock look
       hours = hours < 10 ? '0' + hours : hours;
       minutes = minutes < 10 ? '0' + minutes : minutes;
       
-      document.getElementById('clock-h').textContent = hours;
-      document.getElementById('clock-m').textContent = minutes;
+      clockH.textContent = hours;
+      clockM.textContent = minutes;
     }
-    setInterval(updateClock, 1000);
-    updateClock(); // Run immediately
-
-    // --- Pomodoro Logic (With State Saving) ---
-    let timer;
-    let isRunning = false;
-    let currentMode = 'work'; 
-    let timeRemaining = 25 * 60; 
-    let savedTimes = { work: null, shortBreak: null, longBreak: null };
-
-    const durations = {
-      work: 25,
-      shortBreak: 5,
-      longBreak: 15
-    };
-
-    const display = document.getElementById('time-display');
-    const startBtnText = document.getElementById('start-text');
-    const playIcon = document.getElementById('play-icon');
-    const settingsPanel = document.getElementById('settings-panel');
-    let customAudioUrl = null;
-    const audioPlayer = document.getElementById('custom-audio-player');
-    const soundStatus = document.getElementById('sound-status');
 
     function updateDisplay() {
       const minutes = Math.floor(timeRemaining / 60);
@@ -515,28 +505,25 @@
       durations.work = parseInt(document.getElementById('work-time').value) || 25;
       durations.shortBreak = parseInt(document.getElementById('short-break-time').value) || 5;
       durations.longBreak = parseInt(document.getElementById('long-break-time').value) || 15;
-      
       savedTimes = { work: null, shortBreak: null, longBreak: null };
       if (!isRunning) resetTimer();
     }
 
     function setMode(mode) {
       if (isRunning) toggleTimer(); 
-      
       savedTimes[currentMode] = timeRemaining;
       currentMode = mode;
       
-      document.querySelectorAll('.mode-btn').forEach(btn => {
-        btn.classList.remove('active');
-        if(btn.dataset.mode === mode) btn.classList.add('active');
-      });
+      document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+      if(mode === 'work') document.getElementById('btn-work').classList.add('active');
+      if(mode === 'shortBreak') document.getElementById('btn-short').classList.add('active');
+      if(mode === 'longBreak') document.getElementById('btn-long').classList.add('active');
 
       if (savedTimes[mode] !== null) {
         timeRemaining = savedTimes[mode];
       } else {
         timeRemaining = durations[mode] * 60;
       }
-      
       updateDisplay();
     }
 
@@ -560,9 +547,7 @@
             isRunning = false;
             startBtnText.textContent = 'Start';
             playIcon.textContent = 'play_arrow';
-            
             savedTimes[currentMode] = null; 
-            
             playAlarm(); 
             resetTimer();
           }
@@ -577,28 +562,22 @@
       updateDisplay();
     }
 
-    // FIX: Smooth Settings Transition using CSS classes
     function toggleSettings() {
       settingsPanel.classList.toggle('show');
     }
 
     function toggleTheme() {
       const isDark = document.getElementById('theme-toggle').checked;
-      if (isDark) {
-        document.documentElement.setAttribute('data-theme', 'dark');
-      } else {
-        document.documentElement.removeAttribute('data-theme');
-      }
+      if (isDark) document.documentElement.setAttribute('data-theme', 'dark');
+      else document.documentElement.removeAttribute('data-theme');
     }
 
-    /* --- Sound System --- */
     function handleAudioUpload(event) {
       const file = event.target.files[0];
       if (file) {
         if(customAudioUrl) URL.revokeObjectURL(customAudioUrl); 
         customAudioUrl = URL.createObjectURL(file);
         audioPlayer.src = customAudioUrl;
-        
         let fileName = file.name;
         if (fileName.length > 20) fileName = fileName.substring(0, 17) + '...';
         soundStatus.textContent = 'Custom: ' + fileName;
@@ -618,4 +597,25 @@
           console.error("Custom audio playback failed:", e);
           playDefaultBeep(); 
         });
-      } e
+      } else {
+        playDefaultBeep();
+      }
+    }
+
+    function playDefaultBeep() {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContext) {
+        alert('Time is up!');
+        return;
+      }
+      const ctx = new AudioContext();
+      for(let i = 0; i < 3; i++) {
+        setTimeout(() => {
+          const osc = ctx.createOscillator();
+          const gainNode = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(880, ctx.currentTime); 
+          gainNode.gain.setValueAtTime(1, ctx.currentTime);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+          osc.connect(gainNode);
+          gainNode.connect(ctx.destin
