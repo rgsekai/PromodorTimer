@@ -3,11 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pomodoro & Clock - Instant Load</title>
+  <title>Pomodoro & Clock</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
   <style>
     :root {
+      /* Material 3 Light Theme Tokens */
       --md-sys-color-background-grad: linear-gradient(135deg, #eaddff 0%, #ffdbec 100%);
       --md-sys-color-on-background: #1C1B1F;
       --md-sys-color-surface: rgba(255, 255, 255, 0.4); 
@@ -21,6 +22,7 @@
     }
 
     [data-theme="dark"] {
+      /* Material 3 Dark Theme Tokens */
       --md-sys-color-background-grad: linear-gradient(135deg, #141218 0%, #381e72 100%);
       --md-sys-color-on-background: #E6E0E9;
       --md-sys-color-surface: rgba(43, 41, 48, 0.4); 
@@ -52,13 +54,14 @@
       background-attachment: fixed;
     }
 
+    /* Glassmorphism Container */
     .app-container {
       background: var(--md-sys-color-surface);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border: 1px solid var(--glass-border);
       border-radius: 28px;
-      padding: 32px 32px 16px 32px;
+      padding: 32px 32px 16px 32px; /* Adjusted padding for bottom nav */
       width: 100%;
       max-width: 400px;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
@@ -68,6 +71,7 @@
       transition: background-color 0.3s ease, border-color 0.3s ease;
     }
 
+    /* New View & Clock Styles */
     .view-section {
       display: flex;
       flex-direction: column;
@@ -121,6 +125,7 @@
       transition: background-color 0.3s ease, color 0.3s ease;
     }
 
+    /* Original Pomodoro Styles */
     .mode-selector {
       display: flex;
       background: var(--md-sys-color-surface-container);
@@ -255,19 +260,63 @@
       padding: 7px 11px;
     }
 
-    .sound-btn-group { display: flex; gap: 8px; }
-    .sound-btn { padding: 6px 12px; font-size: 12px; border-radius: 8px; }
-    .sound-status { font-size: 12px; text-align: right; color: var(--md-sys-color-primary); margin-top: -8px; margin-bottom: 16px; font-weight: 500; }
+    .sound-btn-group {
+      display: flex;
+      gap: 8px;
+    }
 
-    /* Switch */
-    .switch { position: relative; display: inline-block; width: 52px; height: 32px; }
+    .sound-btn {
+      padding: 6px 12px;
+      font-size: 12px;
+      border-radius: 8px;
+    }
+
+    .sound-status {
+      font-size: 12px;
+      text-align: right;
+      color: var(--md-sys-color-primary);
+      margin-top: -8px;
+      margin-bottom: 16px;
+      font-weight: 500;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 52px;
+      height: 32px;
+    }
     .switch input { opacity: 0; width: 0; height: 0; }
-    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--md-sys-color-surface-container); border: 2px solid var(--md-sys-color-outline); transition: .3s; border-radius: 34px; }
-    .slider:before { position: absolute; content: ""; height: 24px; width: 24px; left: 2px; bottom: 2px; background-color: var(--md-sys-color-outline); transition: .3s; border-radius: 50%; }
-    input:checked + .slider { background-color: var(--md-sys-color-primary); border-color: var(--md-sys-color-primary); }
-    input:checked + .slider:before { transform: translateX(20px); background-color: var(--md-sys-color-on-primary); }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: var(--md-sys-color-surface-container);
+      border: 2px solid var(--md-sys-color-outline);
+      transition: .3s;
+      border-radius: 34px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 24px;
+      width: 24px;
+      left: 2px;
+      bottom: 2px;
+      background-color: var(--md-sys-color-outline);
+      transition: .3s;
+      border-radius: 50%;
+    }
+    input:checked + .slider {
+      background-color: var(--md-sys-color-primary);
+      border-color: var(--md-sys-color-primary);
+    }
+    input:checked + .slider:before {
+      transform: translateX(20px);
+      background-color: var(--md-sys-color-on-primary);
+    }
 
-    /* Bottom Navigation */
+    /* Bottom Navigation Styles */
     .bottom-nav {
       display: flex;
       width: 100%;
@@ -310,12 +359,12 @@
 
   <div class="app-container">
     
-    <!-- HOME VIEW (CLOCK) -->
+    <!-- NEW HOME VIEW (CLOCK) -->
     <div id="home-view" class="view-section hidden">
       <div class="clock-display" id="real-time-clock"></div>
       
-      <!-- Timezone Chooser Pill -->
-      <select id="timezone-select" class="pill-select">
+      <!-- Timezone Chooser -->
+      <select id="timezone-select" class="pill-select" onchange="updateClock()">
         <option value="" disabled selected>Choose Timezone</option>
         <option value="local">Local Time</option>
         <option value="America/New_York">New York (EST)</option>
@@ -331,26 +380,25 @@
       </select>
     </div>
 
-    <!-- POMODORO VIEW -->
+    <!-- ORIGINAL POMODORO VIEW -->
     <div id="pomodoro-view" class="view-section">
-      
       <div class="mode-selector">
-        <button class="mode-btn active" data-mode="work" id="btn-mode-work">Work</button>
-        <button class="mode-btn" data-mode="shortBreak" id="btn-mode-short">Short Break</button>
-        <button class="mode-btn" data-mode="longBreak" id="btn-mode-long">Long Break</button>
+        <button class="mode-btn active" data-mode="work" onclick="setMode('work')">Work</button>
+        <button class="mode-btn" data-mode="shortBreak" onclick="setMode('shortBreak')">Short Break</button>
+        <button class="mode-btn" data-mode="longBreak" onclick="setMode('longBreak')">Long Break</button>
       </div>
 
       <div class="timer-display" id="time-display">25:00</div>
 
       <div class="controls">
-        <button class="btn btn-primary" id="start-btn">
+        <button class="btn btn-primary" id="start-btn" onclick="toggleTimer()">
           <span class="material-symbols-outlined" id="play-icon">play_arrow</span>
           <span id="start-text">Start</span>
         </button>
-        <button class="btn btn-secondary icon-btn" id="reset-btn" title="Reset Timer">
+        <button class="btn btn-secondary icon-btn" onclick="resetTimer()" title="Reset Timer">
           <span class="material-symbols-outlined">refresh</span>
         </button>
-        <button class="btn btn-secondary icon-btn" id="settings-btn" title="Settings">
+        <button class="btn btn-secondary icon-btn" onclick="toggleSettings()" title="Settings">
           <span class="material-symbols-outlined">settings</span>
         </button>
       </div>
@@ -364,44 +412,45 @@
         <div class="input-group">
           <label for="theme-toggle">Dark Theme</label>
           <label class="switch">
-            <input type="checkbox" id="theme-toggle">
+            <input type="checkbox" id="theme-toggle" onchange="toggleTheme()">
             <span class="slider"></span>
           </label>
         </div>
 
+        <!-- Sound Settings -->
         <div class="input-group">
           <label>Alarm Sound</label>
           <div class="sound-btn-group">
-            <button class="btn btn-secondary sound-btn" id="btn-upload-sound">Choose File</button>
-            <button class="btn btn-secondary sound-btn" id="btn-default-sound">Default</button>
+            <button class="btn btn-secondary sound-btn" onclick="document.getElementById('audio-upload').click()">Choose File</button>
+            <button class="btn btn-secondary sound-btn" onclick="useDefaultSound()">Default</button>
           </div>
-          <input type="file" id="audio-upload" accept="audio/*" style="display: none;">
+          <input type="file" id="audio-upload" accept="audio/*" style="display: none;" onchange="handleAudioUpload(event)">
         </div>
         <div class="sound-status" id="sound-status">Using Default Sound</div>
         <audio id="custom-audio-player"></audio>
 
         <div class="input-group">
           <label for="work-time">Work (Minutes)</label>
-          <input type="number" id="work-time" class="m3-input" value="25" min="1" max="90">
+          <input type="number" id="work-time" class="m3-input" value="25" min="1" max="90" onchange="updateDurations()">
         </div>
         <div class="input-group">
           <label for="short-break-time">Short Break (Minutes)</label>
-          <input type="number" id="short-break-time" class="m3-input" value="5" min="1" max="30">
+          <input type="number" id="short-break-time" class="m3-input" value="5" min="1" max="30" onchange="updateDurations()">
         </div>
         <div class="input-group">
           <label for="long-break-time">Long Break (Minutes)</label>
-          <input type="number" id="long-break-time" class="m3-input" value="15" min="1" max="60">
+          <input type="number" id="long-break-time" class="m3-input" value="15" min="1" max="60" onchange="updateDurations()">
         </div>
       </div>
     </div>
 
-    <!-- BOTTOM NAVIGATION -->
+    <!-- NEW BOTTOM NAVIGATION -->
     <div class="bottom-nav">
-      <button class="nav-tab" id="nav-btn-home">
+      <button class="nav-tab" id="nav-btn-home" onclick="switchView('home')">
         <span class="material-symbols-outlined">home</span>
         Home
       </button>
-      <button class="nav-tab active" id="nav-btn-pomodoro">
+      <button class="nav-tab active" id="nav-btn-pomodoro" onclick="switchView('pomodoro')">
         <span class="material-symbols-outlined">timer</span>
         Timer
       </button>
@@ -410,27 +459,7 @@
   </div>
 
   <script>
-    /* --- State Variables --- */
-    let timer;
-    let isRunning = false;
-    let currentMode = 'work'; 
-    let savedTimes = { work: null, shortBreak: null, longBreak: null };
-    let durations = { work: 25, shortBreak: 5, longBreak: 15 };
-    let timeRemaining = durations.work * 60; 
-    let customAudioUrl = null;
-
-    /* --- DOM Elements --- */
-    const display = document.getElementById('time-display');
-    const startBtnText = document.getElementById('start-text');
-    const playIcon = document.getElementById('play-icon');
-    const settingsPanel = document.getElementById('settings-panel');
-    const audioPlayer = document.getElementById('custom-audio-player');
-    const soundStatus = document.getElementById('sound-status');
-    
-    const realTimeClock = document.getElementById('real-time-clock');
-    const timezoneSelect = document.getElementById('timezone-select');
-
-    /* --- Functions --- */
+    // --- Navigation Logic ---
     function switchView(view) {
       document.getElementById('home-view').classList.add('hidden');
       document.getElementById('pomodoro-view').classList.add('hidden');
@@ -440,40 +469,69 @@
       if (view === 'home') {
         document.getElementById('home-view').classList.remove('hidden');
         document.getElementById('nav-btn-home').classList.add('active');
+        document.title = "Clock & Pomodoro";
       } else {
         document.getElementById('pomodoro-view').classList.remove('hidden');
         document.getElementById('nav-btn-pomodoro').classList.add('active');
+        updateDisplay(); // Puts the timer back in the tab title
       }
     }
 
+    // --- Clock Logic ---
     function updateClock() {
       const now = new Date();
       let options = { hour: 'numeric', minute: '2-digit', hour12: true };
-      const selectedTz = timezoneSelect ? timezoneSelect.value : 'local';
-      
+      const selectElement = document.getElementById('timezone-select');
+      const selectedTz = selectElement ? selectElement.value : 'local';
+
       if (selectedTz && selectedTz !== 'local') {
         options.timeZone = selectedTz;
       }
-      
+
       try {
         const timeString = new Intl.DateTimeFormat('en-US', options).format(now);
         const parts = timeString.split(' ');
         const timePart = parts[0];
-        const ampmPart = parts[1] || ''; 
-        realTimeClock.innerHTML = `${timePart}<span class="ampm-text">${ampmPart}</span>`;
+        const ampmPart = parts[1] || '';
+        document.getElementById('real-time-clock').innerHTML = `${timePart}<span class="ampm-text">${ampmPart}</span>`;
       } catch (error) {
         console.error("Timezone fetch error:", error);
       }
     }
+    setInterval(updateClock, 1000);
+    updateClock(); // Run immediately
 
-    function updateDisplayInternal() {
+    // --- Original Pomodoro Logic (Upgraded for Saving State) ---
+    let timer;
+    let isRunning = false;
+    let currentMode = 'work'; 
+    let timeRemaining = 25 * 60; 
+    
+    // NEW: Variable to hold saved times
+    let savedTimes = { work: null, shortBreak: null, longBreak: null };
+
+    const durations = {
+      work: 25,
+      shortBreak: 5,
+      longBreak: 15
+    };
+
+    const display = document.getElementById('time-display');
+    const startBtnText = document.getElementById('start-text');
+    const playIcon = document.getElementById('play-icon');
+    const settingsPanel = document.getElementById('settings-panel');
+    
+    // Audio Elements
+    let customAudioUrl = null;
+    const audioPlayer = document.getElementById('custom-audio-player');
+    const soundStatus = document.getElementById('sound-status');
+
+    function updateDisplay() {
       const minutes = Math.floor(timeRemaining / 60);
       const seconds = timeRemaining % 60;
       display.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
       if (!document.getElementById('pomodoro-view').classList.contains('hidden')) {
         document.title = `${display.textContent} - Pomodoro`;
-      } else {
-        document.title = `Pomodoro & Clock`;
       }
     }
 
@@ -481,13 +539,18 @@
       durations.work = parseInt(document.getElementById('work-time').value) || 25;
       durations.shortBreak = parseInt(document.getElementById('short-break-time').value) || 5;
       durations.longBreak = parseInt(document.getElementById('long-break-time').value) || 15;
+      
+      // Clear saved states if settings change
       savedTimes = { work: null, shortBreak: null, longBreak: null };
       if (!isRunning) resetTimer();
     }
 
     function setMode(mode) {
       if (isRunning) toggleTimer(); 
+      
+      // Save current time before switching
       savedTimes[currentMode] = timeRemaining;
+      
       currentMode = mode;
       
       document.querySelectorAll('.mode-btn').forEach(btn => {
@@ -495,12 +558,14 @@
         if(btn.dataset.mode === mode) btn.classList.add('active');
       });
 
+      // Load saved time if it exists, otherwise use fresh duration
       if (savedTimes[mode] !== null) {
         timeRemaining = savedTimes[mode];
       } else {
         timeRemaining = durations[mode] * 60;
       }
-      updateDisplayInternal();
+      
+      updateDisplay();
     }
 
     function toggleTimer() {
@@ -516,16 +581,19 @@
         
         timer = setInterval(() => {
           timeRemaining--;
-          updateDisplayInternal();
+          updateDisplay();
           
           if (timeRemaining <= 0) {
             clearInterval(timer);
             isRunning = false;
             startBtnText.textContent = 'Start';
             playIcon.textContent = 'play_arrow';
+            
+            // Clear the saved state for this mode since it finished
             savedTimes[currentMode] = null; 
-            playAlarmInternal(); 
-            resetTimer(); 
+            
+            playAlarm(); // Trigger sound
+            resetTimer();
           }
         }, 1000);
       }
@@ -533,69 +601,32 @@
 
     function resetTimer() {
       if (isRunning) toggleTimer();
-      savedTimes[currentMode] = null;
+      savedTimes[currentMode] = null; // Clear saved state on manual reset
       timeRemaining = durations[currentMode] * 60;
-      updateDisplayInternal();
+      updateDisplay();
     }
 
     function toggleSettings() {
       settingsPanel.style.display = settingsPanel.style.display === 'block' ? 'none' : 'block';
     }
 
-    function toggleTheme(e) {
-      if (e.target.checked) document.documentElement.setAttribute('data-theme', 'dark');
-      else document.documentElement.removeAttribute('data-theme');
+    function toggleTheme() {
+      const isDark = document.getElementById('theme-toggle').checked;
+      if (isDark) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+      }
     }
 
-    function handleAudioUpload(e) {
-      const file = e.target.files[0];
+    /* --- Sound System --- */
+    function handleAudioUpload(event) {
+      const file = event.target.files[0];
       if (file) {
-        if(customAudioUrl) URL.revokeObjectURL(customAudioUrl);
+        if(customAudioUrl) URL.revokeObjectURL(customAudioUrl); // Clean up old URL
         customAudioUrl = URL.createObjectURL(file);
         audioPlayer.src = customAudioUrl;
+        
+        // Truncate name if too long
         let fileName = file.name;
-        if (fileName.length > 20) fileName = fileName.substring(0, 17) + '...';
-        soundStatus.textContent = 'Custom: ' + fileName;
-      }
-    }
-
-    function useDefaultSound() {
-      customAudioUrl = null;
-      audioPlayer.removeAttribute('src');
-      soundStatus.textContent = 'Using Default Sound';
-      document.getElementById('audio-upload').value = '';
-    }
-
-    function playAlarmInternal() {
-      if (customAudioUrl) {
-        audioPlayer.play().catch(e => {
-          console.error("Custom audio playback failed:", e);
-          playDefaultBeepInternal(); 
-        });
-      } else {
-        playDefaultBeepInternal();
-      }
-    }
-
-    function playDefaultBeepInternal() {
-      const AudioContext = window.AudioContext || window.webkitAudioContext;
-      if (!AudioContext) return;
-      const ctx = new AudioContext();
-      for(let i = 0; i < 3; i++) {
-        setTimeout(() => {
-          const osc = ctx.createOscillator();
-          const gainNode = ctx.createGain();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(880, ctx.currentTime); 
-          gainNode.gain.setValueAtTime(1, ctx.currentTime);
-          gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-          osc.connect(gainNode);
-          gainNode.connect(ctx.destination);
-          osc.start(ctx.currentTime);
-          osc.stop(ctx.currentTime + 0.3);
-        }, i * 500);
-      }
-    }
-
-    /* --- Attach Event Listeners --- */
-    document.getElementById('nav-btn-home').addEventListe
+        if (fileName.lengt
